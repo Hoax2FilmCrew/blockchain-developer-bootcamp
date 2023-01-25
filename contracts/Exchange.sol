@@ -34,6 +34,15 @@ contract Exchange {
 		uint256 amountGive,
 		uint256 timestamp);
 
+	event Cancel(
+		uint256 id,      
+		address user,       
+		address tokenGet,   
+		uint256 amountGet,  
+		address tokenGive,  
+		uint256 amountGive,
+		uint256 timestamp);
+
 	// a way to model the order
 
 	struct _Order{
@@ -129,13 +138,27 @@ contract Exchange {
 
 	function cancelOrder(uint256 _id) public {
 		//fetch order
-		_Order storage _order orders[_id];
+		_Order storage _order = orders[_id];
+
+		//ensure the caller of the function is the owner of the order
+		require(address(_order.user) == msg.sender);
+
+		//order must exist
+		require(_order.id == _id);
+
 		//cancel order
 		orderCancelled[_id] = true;
+
+		//Emit event
+		emit Cancel(
+			_order.id,
+			msg.sender,
+			_order.tokenGet,
+			_order.amountGet,
+			_order.tokenGive,
+			_order.amountGive,
+			block.timestamp
+			);
 	}
-
-
-
-
 
 }
