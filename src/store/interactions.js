@@ -57,6 +57,10 @@ export const subscribeToEvents = (exchange, dispatch) => {
     dispatch({ type: 'ORDER_CANCEL_SUCCESS', order, event })
   })
 
+  exchange.on('Trade', (id, user, tokenGet, amountGet, tokenGive, amountGive, creator, timestamp, event) => {
+    const order = event.args
+    dispatch({ type: 'ORDER_FILL_SUCCESS', order, event })
+  })
 
   exchange.on('Deposit', (token, user, amount, balance, event) => {
     dispatch({ type: 'TRANSFER_SUCCESS', event })
@@ -90,6 +94,7 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
   dispatch({ type: 'EXCHANGE_TOKEN_2_BALANCE_LOADED', balance })
 
 }
+
 
 // ------------------------------------------------------------------------------
 // LOAD ALL ORDERS
@@ -138,7 +143,6 @@ export const transferTokens =  async (provider, exchange, transferType, token, a
       transaction = await exchange.connect(signer).withdrawToken(token.address, amountToTransfer)
     }
 
-
     await transaction.wait()
 
   } catch(error) {
@@ -146,15 +150,15 @@ export const transferTokens =  async (provider, exchange, transferType, token, a
   }
 }
 
-
-// Orders Buy/Sell
+// ------------------------------------------------------------------------------
+// ORDERS (BUY & SELL)
 
 export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) => {
   const tokenGet = tokens[0].address
   const amountGet = ethers.utils.parseUnits(order.amount, 18)
   const tokenGive = tokens[1].address
   const amountGive = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
-  
+
   dispatch({ type: 'NEW_ORDER_REQUEST' })
 
   try {
@@ -171,7 +175,7 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
   const amountGet = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
   const tokenGive = tokens[0].address
   const amountGive = ethers.utils.parseUnits(order.amount, 18)
-  
+
   dispatch({ type: 'NEW_ORDER_REQUEST' })
 
   try {
@@ -183,8 +187,8 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
   }
 }
 
-//---------------------
-//cancel order
+// ------------------------------------------------------------------------------
+// CANCEL ORDER
 
 export const cancelOrder = async (provider, exchange, order, dispatch) => {
 
@@ -197,6 +201,19 @@ export const cancelOrder = async (provider, exchange, order, dispatch) => {
   } catch (error) {
     dispatch({ type: 'ORDER_CANCEL_FAIL' })
   }
+}
 
+// ------------------------------------------------------------------------------
+// FILL ORDER
 
+export const fillOrder = async (provider, exchange, order, dispatch) => {
+  dispatch({ type: 'ORDER_FILL_REQUEST' })
+
+  try {
+    const signer = await provider.getSigner()
+    const transaction = await exchange.connect(signer).fillOrder(order.id)
+    await transaction.wait()
+  } catch (error) {
+    dispatch({ type: 'ORDER_FILL_FAIL' })
+  }
 }
