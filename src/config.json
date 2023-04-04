@@ -16,5 +16,8 @@
   },
   "5" : {
     "explorerURL": "https://goerli.etherscan.io/"
+  },
+  "11155111" : {
+    "explorerURL": "https://sepolia.infura.io/"
   }
 }
