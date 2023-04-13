@@ -31,5 +31,20 @@
       "address": "0xEda5593C417d8b886b47242bBb9618Bc2213BbB4"
     },
     "explorerURL": "https://sepolia.infura.io/"
+  },
+  "80001" : {
+    "exchange": {
+      "address": "0xBF2b30a12C254Cc25D6530685c93E8b962919706"
+    },
+    "DApp": {
+      "address": "0xD521634720448940A620aaaE39890930A068E8A2"
+    },
+    "mETH": {
+      "address": "0x6Fa588EA34C669135194538F53C700e6d8787232"
+    },
+    "mDAI": {
+      "address": "0xEda5593C417d8b886b47242bBb9618Bc2213BbB4"
+    },
+    "explorerURL": "https://mumbai.polygonscan.com/"
   }
 }
